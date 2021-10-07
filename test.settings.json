@@ -1,0 +1,71 @@
+{
+  "testClassSettings": {
+    "candle": { "from": 15, "to": 315, "step": 15, "int": true },
+    "type": "ema",
+    "history": "3c"
+  },
+  "wallet": 100,
+  "leverage": 10,
+  "useSMA": true,
+  "geneticSettings": {
+    "pair": "ADAUSDT",
+    "population": 25,
+    "gen": 100,
+    "mutations": 3,
+    "mutationPerc": 20,
+    "crossoverPerc": 20,
+    "bestPerc": 10,
+    "startFrom": 0
+  },
+  "simulateOptions": {
+    "tp": { "from": 0, "to": 52, "step": 1, "int": true },
+    "tsl": { "from": 0, "to": 15, "step": 1, "int": true },
+    "candle": { "from": 60, "to": 600, "step": 5, "int": true }
+  },
+  "findPos": {
+    "name": "🚘_yak_Rakel",
+    "suffix": "dev"
+  },
+  "runOne": {
+    "pair": "BNBUSDT",
+    "startFrom": 0,
+    "timeEnd": 1831283418000,
+    "sett": {
+      "type": "trix",
+      "history": "3c",
+      "opts": {
+        "maLow": 12,
+        "maHigh": 26,
+        "trs": 0.008,
+        "rsi": 7,
+        "rsiUpper": 30,
+        "rsiLower": 30,
+        "ampTrs": 0,
+        "trix": 4,
+        "sma": 22,
+        "upper": 0.062,
+        "lower": -0.219
+      },
+      "candle": 305,
+      "tp": 45,
+      "sl": 65,
+      "tsl": 0
+    }
+  },
+  "fromHistory": {
+    "pair": "ADAUSDT",
+    "file": "genetic/ada-1631621155908-1629403436028-1631619985692-trix.json",
+    "best": 100,
+    "startFrom": 1629403436028,
+    "timeEnd": 1631619985692
+  },
+  "loadData": {
+    "startTime": 1632235756205,
+    "endTime": 1632240531915,
+    "pair": "XRPUSDT",
+    "file": "xrp/xrpusdt-1632214507679"
+  },
+  "log": "genetic/ada-1633357261999-1617235201404-1633219199691-trix.json",
+  "pushLog": true,
+  "todo": "log"
+}
