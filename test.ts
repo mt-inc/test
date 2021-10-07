@@ -222,7 +222,7 @@ class Test {
     if (trimmed === 'ethb') {
       trimmed = 'ehtb';
     }
-    const dir = `trades/${trimmed}${old ? '/old' : ''}`;
+    const dir = `../trades/${trimmed}${old ? '/old' : ''}`;
     if (fs.existsSync(dir)) {
       fs.readdir(dir, async (err, file) => {
         if (err) {
@@ -474,7 +474,7 @@ class Test {
       if (trimmed === 'ethb') {
         trimmed = 'ehtb';
       }
-      const dir = `trades/${trimmed}${old ? '/old' : ''}`;
+      const dir = `../trades/${trimmed}${old ? '/old' : ''}`;
       if (fs.existsSync(dir)) {
         fs.readdir(dir, async (err, file) => {
           if (err) {
@@ -629,7 +629,7 @@ class Test {
     if (trimmed === 'ethb') {
       trimmed = 'ehtb';
     }
-    const dir = `trades/${trimmed}`;
+    const dir = `../trades/${trimmed}`;
     if (fs.existsSync(dir)) {
       fs.readdir(dir, async (err, file) => {
         if (err) {
