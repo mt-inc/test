@@ -5,3 +5,4 @@ node_modules
 .yarnrc.yml
 dist
 test.settings.json
+.pnp.cjs
