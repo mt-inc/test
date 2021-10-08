@@ -682,7 +682,7 @@ class Test {
             if (item.indexOf('.tmp') === -1 && item.indexOf('old') === -1) {
               const data = getFileLinesSync(`${dir}/${item}`, 'utf8');
               for (const d of data) {
-                let [p, v, time] = d.split(',');
+                let [_aggId, p, v, _firstId, _lastId, time, _wasMaker] = d.split(',');
                 const t = parseInt(time);
                 if (p && v && t) {
                   if (t >= startFrom && t <= timeEnd) {
