@@ -785,7 +785,7 @@ class Test {
       const lastTime = res[res.length - 1].timestamp;
       const toWrite = res.filter((item) => item.timestamp < lastTime && item.timestamp < endTime);
       c += toWrite.length;
-      const fileName = `trades/${file}-${Math.trunc(c / 200000)}.csv`;
+      const fileName = `../trades/${file}-${Math.trunc(c / 200000)}.csv`;
       fs.appendFileSync(
         fileName,
         `${toWrite.map((item) => `${item.price},${item.quantity},${item.timestamp}`).join('\n')}\n`,
