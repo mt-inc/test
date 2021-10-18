@@ -144,7 +144,7 @@ class Test {
               }
             }
           });
-          if (d > 4) {
+          if (d > 10) {
             return false;
           }
         }
@@ -327,6 +327,8 @@ class Test {
                       history: sett.history,
                     });
                   }
+                  let w = testSettings.wallet;
+                  let next = false;
                   this.positions = new Positions(
                     testSettings.wallet,
                     0,
@@ -337,7 +339,12 @@ class Test {
                     false,
                     undefined,
                     undefined,
-                    undefined,
+                    (net: number) => {
+                      w = w + net;
+                      if (w / testSettings.wallet < 0.01) {
+                        next = true;
+                      }
+                    },
                     undefined,
                     { tpP: sett.tp, slP: sett.sl },
                     { tSlP: sett.tsl },
@@ -351,17 +358,19 @@ class Test {
                   let now = 0;
                   for (let i = 0; i < file.length; i++) {
                     const item = file[i];
-                    if (item.indexOf('.tmp') === -1 && item.indexOf('old') === -1) {
+                    if (item.indexOf('.tmp') === -1 && item.indexOf('old') === -1 && !next) {
                       const data = getFileLinesSync(`${dir}/${item}`, 'utf8');
                       for (const d of data) {
-                        let [_aggId, p, v, _firstId, _lastId, time, _wasMaker] = d.split(',');
-                        const t = parseInt(time);
-                        if (p && v && t) {
-                          if (t >= startFrom && t <= timeEnd) {
-                            now = parseFloat(p);
-                            candles.push(now, parseFloat(v), t);
-                            if (this.positions) {
-                              this.positions.checkPositionRt(now);
+                        if (!next) {
+                          let [_aggId, p, v, _firstId, _lastId, time, _wasMaker] = d.split(',');
+                          const t = parseInt(time);
+                          if (p && v && t) {
+                            if (t >= startFrom && t <= timeEnd) {
+                              now = parseFloat(p);
+                              candles.push(now, parseFloat(v), t);
+                              if (this.positions) {
+                                this.positions.checkPositionRt(now);
+                              }
                             }
                           }
                         }
