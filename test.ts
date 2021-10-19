@@ -810,7 +810,7 @@ class Test {
 if (testSettings.todo === 'log') {
   new Test().log(testSettings.log, testSettings.pushLog);
 } else if (testSettings.todo === 'test') {
-  new Test().newRun(
+  new Test(testSettings.type as StrategyType).newRun(
     {
       ...testSettings.geneticSettings,
       pair: testSettings.geneticSettings.pair as Pairs,
