@@ -127,16 +127,16 @@ class Test {
           return false;
         }
         for (let a = 0; a < exist.length; a++) {
-          //let c = 0;
+          let c = 0;
           let d = 0;
-          /*Object.keys(exist[a].sett.opts).map((key) => {
+          Object.keys(exist[a].sett.opts).map((key) => {
             if (exist[a].sett.opts[key] === item.settings.opts[key]) {
               c++;
             }
           });
           if (c > Object.keys(exist[a].sett.opts).length / 2) {
             return false;
-          }*/
+          }
           Object.keys(exist[a].sett).map((key) => {
             if (key !== 'opts') {
               if (exist[a].sett[key] === item.settings[key]) {
@@ -144,7 +144,7 @@ class Test {
               }
             }
           });
-          if (d > 10) {
+          if (d > 3) {
             return false;
           }
         }
@@ -477,7 +477,6 @@ class Test {
     const fromFile = fs.readFileSync(`simulate/${file}`, 'utf-8');
     const res = JSON.parse(`${fromFile}`) as Score[];
     const sorted = this.logger(res, undefined, best, false);
-    console.log(sorted?.length);
     if (sorted && sorted.length > 0) {
       let trimmed = pair.replace('USDT', '').replace('BUSD', 'b').toLowerCase();
       if (trimmed === 'ethb') {
