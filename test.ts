@@ -349,6 +349,7 @@ class Test {
                     { tpP: sett.tp, slP: sett.sl },
                     { tSlP: sett.tsl },
                     true,
+                    true,
                   );
                   const candles = new Candle(sett.candle, (data: number[]) => {
                     if (this.positions) {
@@ -532,6 +533,7 @@ class Test {
                 { tpP: sett.tp, slP: sett.sl },
                 { tSlP: sett.tsl },
                 true,
+                true,
               );
               const candles = new Candle(sett.candle, (data: number[]) => {
                 if (this.positions) {
@@ -679,6 +681,7 @@ class Test {
             undefined,
             { tpP: sett.tp, slP: sett.sl },
             { tSlP: sett.tsl },
+            true,
             true,
           );
           let now = 0;
