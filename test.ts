@@ -5,7 +5,7 @@ import { Math as MathHelper, Time, getFileLinesSync } from '@mt-inc/utils';
 import { TrixBot, TRIXSimulation, MAbot, MASimulation } from '@mt-inc/strategy';
 import Binance from 'binance-api-node';
 import testSettings from './test.settings.json';
-import { Telegraf } from 'telegraf';
+//import { Telegraf } from 'telegraf';
 import type { PositionType } from '@mt-inc/bot/dist/esm/src/positions';
 import type { EMAStrategy, EMARSIStartegy, SMAStrategy, SMARSIStartegy } from '@mt-inc/strategy/dist/esm/src/ma';
 import type { TRIXStartegyType } from '@mt-inc/strategy/dist/esm/src/trix';
@@ -62,14 +62,26 @@ class Test {
       ehtb: 'ETHBUSD',
       sol: 'SOLUSDT',
       xrp: 'XRPUSDT',
+      '1000shib': '1000SHIBUSDT',
+      link: 'LINKUSDT',
+      atom: 'ATOMUSDT',
+      ftm: 'FTMUSDT',
+      near: 'NEARUSDT',
+      luna: 'LUNAUSDT',
     };
     fs.readFile(log ? `simulate/${log}` : '', async (err, d) => {
       if (!err) {
         if (!push) {
-          this.logger(JSON.parse(`${d}`) as Score[], log);
+          if (testSettings.fhLog) {
+            this.logger2(JSON.parse(`${d}`) as Result[], log);
+          } else {
+            this.logger(JSON.parse(`${d}`) as Score[], log);
+          }
           console.log(pair);
         } else {
-          const res = this.logger(JSON.parse(`${d}`) as Score[], undefined, 100, false);
+          const res = testSettings.fhLog
+            ? this.logger2(JSON.parse(`${d}`), undefined, 100, false)
+            : this.logger(JSON.parse(`${d}`) as Score[], undefined, 100, false);
           const split = log.split('-');
           const from = parseInt(split[2]);
           const to = parseInt(split[3].split('.')[0]);
@@ -89,7 +101,7 @@ class Test {
             }),
           }).then((res) => res.json());
           console.log(req);
-          if (req.status === 'OK') {
+          /*if (req.status === 'OK') {
             const bot = new Telegraf('1963525675:AAFrHLlWq7UEgkalnV0-OhIi8G4W-j1mYYY');
             await bot.launch();
             await bot.telegram.sendMessage(
@@ -101,7 +113,7 @@ class Test {
               },
             );
             bot.stop('SIGINT');
-          }
+          }*/
         }
       } else {
         console.log(err);
@@ -144,7 +156,7 @@ class Test {
               }
             }
           });
-          if (d > 3) {
+          if (d > 5) {
             return false;
           }
         }
@@ -173,6 +185,41 @@ class Test {
       });
     if (con) {
       console.log(sorted, filtered.length, res.filter((item) => item.res.net !== 0).length, res.length);
+      const split = log?.split('-');
+      if (split && split.length > 2) {
+        const from = new Date(parseInt(split[2]));
+        const to = new Date(parseInt(split[3].split('.')[0]));
+        let str = '';
+        if (from.getTime() === from.getTime() && to.getTime() === to.getTime()) {
+          str = `from ${this.time.format(from.getTime())} to ${this.time.format(to.getTime())}`;
+        }
+        console.log(str);
+      }
+    } else {
+      return sorted;
+    }
+  }
+  private logger2(res: Result[], log?: string, best = 100, con = true) {
+    const filtered = res.filter((item) => {
+      return item.net > 0;
+    });
+    const sorted = filtered
+      .sort((a, b) => {
+        return b.net + b.ap - (a.net + a.ap);
+      })
+      .slice(0, best)
+      .reverse()
+      .map((item) => {
+        if (item.type === 'ema+rsi' || item.type === 'sma+rsi' || item.type === 'ema' || item.type === 'sma') {
+          return new MASimulation().formatResult(item);
+        }
+        if (item.type === 'trix') {
+          return new TRIXSimulation().formatResult(item);
+        }
+        return item;
+      });
+    if (con) {
+      console.log(sorted, filtered.length, res.filter((item) => item.net !== 0).length, res.length);
       const split = log?.split('-');
       if (split && split.length > 2) {
         const from = new Date(parseInt(split[2]));
@@ -476,8 +523,10 @@ class Test {
     };
     const { pair, file, best, old, startFrom, timeEnd } = { ...def, ...options };
     const fromFile = fs.readFileSync(`simulate/${file}`, 'utf-8');
-    const res = JSON.parse(`${fromFile}`) as Score[];
-    const sorted = this.logger(res, undefined, best, false);
+    const res = JSON.parse(`${fromFile}`) as any;
+    const sorted = testSettings.fhLog
+      ? this.logger2(res, undefined, best, false)
+      : this.logger(res, undefined, best, false);
     if (sorted && sorted.length > 0) {
       let trimmed = pair.replace('USDT', '').replace('BUSD', 'b').toLowerCase();
       if (trimmed === 'ethb') {
@@ -491,6 +540,7 @@ class Test {
           }
           if (file.length > 0) {
             console.log('Start working');
+            const filename = `simulate/genetic/${trimmed}-${new Date().getTime()}-fromHistory-${this.type}.json`;
             let settings = sorted;
             const popRes: Result[] = [];
             let c = 0;
@@ -548,7 +598,7 @@ class Test {
                   if (item.indexOf('.tmp') === -1 && item.indexOf('old') === -1) {
                     const data = getFileLinesSync(`${dir}/${item}`, 'utf8');
                     for (const d of data) {
-                      let [p, v, time] = d.split(',');
+                      let [_aggId, p, v, _firstId, _lastId, time, _wasMaker] = d.split(',');
                       const t = parseInt(time);
                       if (p && v && t) {
                         if (t >= startFrom && t <= timeEnd) {
@@ -599,14 +649,15 @@ class Test {
               };
               //@ts-ignore
               popRes.push(res);
+              fs.writeFileSync(filename, JSON.stringify(popRes), 'utf-8');
             });
-            console.log(
+            /*console.log(
               popRes
                 .filter((item) => item.net > 0)
                 .sort((a, b) => {
                   return a.net + a.ap - (b.net + b.ap);
                 }),
-            );
+            );*/
             if (testSettings.pushLog) {
               const req = await fetch('https://mt.raptom.com.ua/api/data', {
                 method: 'post',
@@ -714,7 +765,8 @@ class Test {
           }
           console.log(`Data count: ${c}`);
           console.log(`from ${this.time.format(start)} to ${this.time.format(end)}`);
-          console.log(this.positions.currentResult);
+          const { hist, ...rest } = this.positions.currentResult;
+          console.log(rest);
           console.log(this.positions.currentPosition);
         }
       });
