@@ -558,7 +558,7 @@ class Test {
                   trixPeriod: sett.trix,
                   smaPeriod: sett.sma,
                   upper: sett.upper,
-                  lower: sett.lower,
+                  lower: Math.abs(sett.lower) * -1,
                   type: sett.type,
                   history: sett.history,
                 });
@@ -633,6 +633,8 @@ class Test {
               const fall = this.math.round(posRes.fall * 100, 0);
               const res = {
                 ...sett,
+                //@ts-ignore
+                lower: Math.abs(sett.lower || 0),
                 positions: posRes.all,
                 profit: posRes.net,
                 net: posRes.net,
