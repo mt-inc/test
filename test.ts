@@ -146,7 +146,7 @@ class Test {
               c++;
             }
           });
-          if (c > Object.keys(exist[a].sett.opts).length / 2) {
+          if (c > Object.keys(exist[a].sett.opts).length / 1) {
             return false;
           }
           Object.keys(exist[a].sett).map((key) => {
@@ -846,17 +846,21 @@ class Test {
     const { startTime, endTime, pair, file } = { ...def, ...options };
     const client = Binance();
     if (startTime < endTime) {
-      const res = await client.futuresAggTrades({ symbol: pair, startTime, limit: 1000 });
-      const lastTime = res[res.length - 1].timestamp;
-      const toWrite = res.filter((item) => item.timestamp < lastTime && item.timestamp < endTime);
-      c += toWrite.length;
-      const fileName = `../trades/${file}-${Math.trunc(c / 200000)}.csv`;
-      fs.appendFileSync(
-        fileName,
-        `${toWrite.map((item) => `${item.price},${item.quantity},${item.timestamp}`).join('\n')}\n`,
-      );
-      console.log(`${toWrite.length} saved. last: ${lastTime}. total: ${c}, file: ${file}`);
-      this.loadData({ startTime: lastTime, endTime, pair, file }, c);
+      try {
+        const res = await client.futuresAggTrades({ symbol: pair, startTime, limit: 1000 });
+        const lastTime = res[res.length - 1].timestamp;
+        const toWrite = res.filter((item) => item.timestamp < lastTime && item.timestamp < endTime);
+        c += toWrite.length;
+        const fileName = `../trades/${file}-${Math.trunc(c / 200000)}.csv`;
+        fs.appendFileSync(
+          fileName,
+          `${toWrite.map((item) => `${item.price},${item.quantity},${item.timestamp}`).join('\n')}\n`,
+        );
+        console.log(`${toWrite.length} saved. last: ${lastTime}. total: ${c}, file: ${file}`);
+        await new Promise((res) => res(this.loadData({ startTime: lastTime, endTime, pair, file }, c)));
+      } catch (e) {
+        await new Promise((res) => setTimeout(() => res(this.loadData({ startTime, endTime, pair, file }, c)), 5000));
+      }
     } else {
       console.log('end');
     }
